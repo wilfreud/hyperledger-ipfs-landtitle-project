@@ -2,6 +2,7 @@
 	"name": "land-title-hyperledger-fabric-api",
 	"dependencies": {
 		"@grpc/grpc-js": "^1.12.6",
+		"@helia/core": "^0.0.0",
 		"@helia/unixfs": "^4.0.2",
 		"@hyperledger/fabric-gateway": "^1.7.1",
 		"@types/body-parser": "^1.19.5",

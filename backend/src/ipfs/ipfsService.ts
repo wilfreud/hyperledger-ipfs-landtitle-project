@@ -1,9 +1,9 @@
-import { createHelia, Helia } from 'helia';
+import { createHelia } from 'helia';
 import { unixfs } from '@helia/unixfs';
 
 let helia: Awaited<ReturnType<typeof createHelia>>;
 
-const initHeliaClient = async (): Promise<Helia> => {
+const initHeliaClient = async () => {
     if (!helia) {
         helia = await createHelia();
     }
