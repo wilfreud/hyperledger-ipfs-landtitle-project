@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createLandTitle } from '../controllers/landTitleController';
+import { createLandTitle } from '../controllers/landTitleController.js';
 
 const router = Router();
 

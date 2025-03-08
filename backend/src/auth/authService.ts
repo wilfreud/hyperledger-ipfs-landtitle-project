@@ -1,4 +1,4 @@
-import { config } from '../config';
+import { config } from '../config/index.js';
 import { connect, Contract, Identity, Signer } from '@hyperledger/fabric-gateway';
 import { promises as fs } from 'fs';
 import path from 'path';

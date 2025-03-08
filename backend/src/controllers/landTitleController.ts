@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { uploadToIPFS } from '../ipfs/ipfsService';
-import { getContract } from '../chaincode/fabricGateway';
+import { uploadToIPFS } from '../ipfs/ipfsService.js';
+import { getContract } from '../chaincode/fabricGateway.js';
 import { Request, Response } from 'express';
 
 const LandTitleSchema = z.object({

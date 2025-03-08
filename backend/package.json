@@ -1,5 +1,6 @@
 {
 	"name": "land-title-hyperledger-fabric-api",
+	"type": "module",
 	"dependencies": {
 		"@grpc/grpc-js": "^1.12.6",
 		"@helia/core": "^0.0.0",

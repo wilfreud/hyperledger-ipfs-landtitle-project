@@ -1,6 +1,6 @@
 import { connect, Contract, Gateway, Hash } from '@hyperledger/fabric-gateway';
-import { config } from '../config';
-import { newGrpcConnection, newIdentity, newSigner } from '../auth/authService';
+import { config } from '../config/index.js';
+import { newGrpcConnection, newIdentity, newSigner } from '../auth/authService.js';
 
 let gateway: Gateway;
 
