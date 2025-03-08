@@ -1,4 +1,6 @@
 import { cleanEnv, str, num } from 'envalid';
+import dotenv from 'dotenv'
+dotenv.config({ path: '.env' });
 
 export const config = cleanEnv(process.env, {
   JWT_SECRET: str(),
