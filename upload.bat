@@ -1,0 +1,1 @@
+scp -r chaincode assetTransfer.go go.mod go.sum setup-hyperledger.sh commodore@172.31.58.38:hyperledger/land-title-go
