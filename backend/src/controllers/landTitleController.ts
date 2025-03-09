@@ -2,14 +2,15 @@ import { Request, Response } from 'express';
 import { getContract } from '../chaincode/fabricGateway.js';
 import { uploadToIPFS } from '../ipfs/ipfsService.js';
 import { z } from 'zod';
+import { randomUUID } from 'crypto'
 
 function parseFabricresponse(response: any) {
-    return JSON.parse(Buffer.from(response).toString("utf-8"));
+    return Buffer.from(response).toString("utf-8");
 }
 
 // Validation Schemas
 const CreateLandTitleSchema = z.object({
-    id: z.string().min(3),
+    // id: z.string().min(3),
     owner: z.string().min(3),
     description: z.string().min(10),
     value: z.number().positive(),
@@ -30,22 +31,22 @@ const TransferLandTitleSchema = z.object({
 export const createLandTitle = async (req: Request, res: Response) => {
     try {
         const validated = CreateLandTitleSchema.parse(req.body);
-        const documentHash = await uploadToIPFS(validated.document);
+        const documentHash = validated.document ? await uploadToIPFS(validated.document) : "";
 
         const contract = await getContract();
         const result = await contract.submitTransaction(
             'CreateLandTitle',
-            validated.id,
+            randomUUID(),
             validated.owner,
             validated.description,
             validated.value.toString(),
+            validated.timestamp,
             documentHash,
-            validated.timestamp
         );
 
+        console.log(result)
+
         res.status(201).json({
-            // txId: parseFabricresponse(result).getTransactionId(),
-            txId: parseFabricresponse(result),
             cid: documentHash
         });
     } catch (error) {
@@ -100,7 +101,6 @@ export const transferLandTitle = async (req: Request, res: Response) => {
             validated.newOrg
         );
 
-        console.log(result)
         res.status(200).json({
             txId: parseFabricresponse(result),
             message: 'Land title transferred'

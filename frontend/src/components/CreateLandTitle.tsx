@@ -16,7 +16,6 @@ export function CreateLandTitle() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    id: '',
     owner: '',
     description: '',
     value: '',
@@ -28,8 +27,11 @@ export function CreateLandTitle() {
     e.preventDefault();
     try {
       await createLandTitle({
-        ...formData,
+        owner: formData.owner,
+        description: formData.description,
         value: Number(formData.value),
+        document: formData.document,
+        timestamp: formData.timestamp,
       });
       toast({
         title: 'Success',
@@ -55,13 +57,6 @@ export function CreateLandTitle() {
           <DialogTitle>Create New Land Title</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Input
-              placeholder="ID"
-              value={formData.id}
-              onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-            />
-          </div>
           <div className="space-y-2">
             <Input
               placeholder="Owner"

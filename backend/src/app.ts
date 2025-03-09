@@ -11,7 +11,7 @@ import cors from 'cors'
 dotenv.config({ path: ".env" });
 
 const app = express();
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
 
 // Generate Swagger spec
