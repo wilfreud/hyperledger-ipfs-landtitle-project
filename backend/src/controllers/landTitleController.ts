@@ -5,7 +5,12 @@ import { z } from 'zod';
 import { randomUUID } from 'crypto'
 
 function parseFabricresponse(response: any) {
-    return Buffer.from(response).toString("utf-8");
+    const str = Buffer.from(response).toString("utf-8");
+    try {
+        return JSON.parse(str)
+    } catch (err) {
+        return str
+    }
 }
 
 // Validation Schemas
@@ -114,7 +119,6 @@ export const getAllLandTitles = async (req: Request, res: Response) => {
     try {
         const contract = await getContract();
         const result = await contract.evaluateTransaction('GetAllLandTitles');
-        console.log(Buffer.from(result).toString("utf-8"))
 
         res.status(200).json(parseFabricresponse(result));
     } catch (error) {

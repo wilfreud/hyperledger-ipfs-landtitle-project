@@ -15,6 +15,7 @@ export interface LandTitle {
   PropertyValue: number;
   document: string;
   Timestamp: string;
+  Organization: string;
 }
 
 export interface CreateLandTitleRequest extends LandTitle { }

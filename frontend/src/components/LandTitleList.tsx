@@ -37,7 +37,7 @@ export function LandTitleList() {
   const fetchLandTitles = async () => {
     try {
       const data = await getLandTitles();
-      setLandTitles(data);
+      setLandTitles(data  || []);
     } catch (error) {
       toast({
         title: "Error",
@@ -56,7 +56,7 @@ export function LandTitleList() {
         description: "Land title transferred successfully",
       });
       setTransferModalOpen(false);
-      fetchLandTitles();
+      await fetchLandTitles();
     } catch (error) {
       toast({
         title: "Error",
@@ -80,16 +80,18 @@ export function LandTitleList() {
             <TableHead>Owner</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Value</TableHead>
+            <TableHead>Organization</TableHead>
             <TableHead>Timestamp</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {landTitles.map((title, index) => (
+          {landTitles?.map((title, index) => (
             <TableRow key={index} className="bg-white">
               <TableCell>{title.Owner}</TableCell>
               <TableCell>{title.PropertyDescription}</TableCell>
               <TableCell>{title.PropertyValue}</TableCell>
+              <TableCell>{title.Organization}</TableCell>
               <TableCell>
                 {new Date(title.Timestamp).toLocaleDateString()}
               </TableCell>
