@@ -10,8 +10,8 @@ function Dashboard() {
   const { logout } = useAuth();
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      <div className="flex justify-between items-center">
+    <div className=" py-8 space-y-8 ">
+      <div className="flex w-full justify-between items-center">
         <h1 className="text-3xl font-bold">Land Title Management</h1>
         <Button variant="outline" onClick={logout}>
           Logout

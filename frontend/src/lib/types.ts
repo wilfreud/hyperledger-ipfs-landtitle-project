@@ -9,15 +9,15 @@ export interface LoginResponse {
 }
 
 export interface LandTitle {
-  id: string;
-  owner: string;
-  description: string;
-  value: number;
+  ID: string;
+  Owner: string;
+  PropertyDescription: string;
+  PropertyValue: number;
   document: string;
-  timestamp: string;
+  Timestamp: string;
 }
 
-export interface CreateLandTitleRequest extends LandTitle {}
+export interface CreateLandTitleRequest extends LandTitle { }
 
 export interface UpdateLandTitleRequest {
   newOwner: string;

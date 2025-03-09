@@ -50,13 +50,13 @@ export function LandTitleList() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {landTitles.map((title) => (
-            <TableRow key={title.id}>
-              <TableCell>{title.id}</TableCell>
-              <TableCell>{title.owner}</TableCell>
-              <TableCell>{title.description}</TableCell>
-              <TableCell>${title.value.toLocaleString()}</TableCell>
-              <TableCell>{new Date(title.timestamp).toLocaleDateString()}</TableCell>
+          {landTitles.map((title, index) => (
+            <TableRow key={index}>
+              <TableCell>{title.ID}</TableCell>
+              <TableCell>{title.Owner}</TableCell>
+              <TableCell>{title.PropertyDescription}</TableCell>
+              <TableCell>{title.PropertyValue}</TableCell>
+              <TableCell>{new Date(title.Timestamp).toLocaleDateString()}</TableCell>
             </TableRow>
           ))}
         </TableBody>
