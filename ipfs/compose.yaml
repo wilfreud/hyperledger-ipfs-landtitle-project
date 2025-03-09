@@ -1,0 +1,21 @@
+services:
+  ipfs_host:
+    image: ipfs/kubo:latest
+    container_name: ipfs_host
+    volumes:
+      - /home/commodore/ipfs-files/staging:/export
+      - /home/commodore/ipfs-files/data:/data/ipfs
+    ports:
+      - "4001:4001"
+      - "4001:4001/udp"
+      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:5001:5001"
+    restart: unless-stopped
+    environment:
+      - IPFS_SWARM_KEY=/data/ipfs/swarm.key
+    networks:
+      - ipfs_network
+
+networks:
+  ipfs_network:
+    driver: bridge

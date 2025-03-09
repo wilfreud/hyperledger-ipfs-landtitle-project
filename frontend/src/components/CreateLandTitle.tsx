@@ -11,9 +11,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Plus, Loader2 } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 
 export function CreateLandTitle() {
   const [open, setOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     owner: '',
@@ -25,61 +28,84 @@ export function CreateLandTitle() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsCreating(true);
     try {
       await createLandTitle({
-        owner: formData.owner,
-        description: formData.description,
-        value: Number(formData.value),
+        Owner: formData.owner,
+        PropertyDescription: formData.description,
+        PropertyValue: Number(formData.value),
         document: formData.document,
-        timestamp: formData.timestamp,
+        Timestamp: formData.timestamp,
+        Organization: '',
+        ID: '',
       });
       toast({
         title: 'Success',
         description: 'Land title created successfully',
       });
       setOpen(false);
+      setFormData({
+        owner: '',
+        description: '',
+        value: '',
+        document: '',
+        timestamp: new Date().toISOString(),
+      });
     } catch (error) {
+      console.error(error);
       toast({
         title: 'Error',
         description: 'Failed to create land title',
         variant: 'destructive',
       });
+    } finally {
+      setIsCreating(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Create New Land Title</Button>
+        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Plus className="w-4 h-4 mr-2" />
+          Create New Land Title
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-slate-900 text-slate-100 border-slate-700">
         <DialogHeader>
-          <DialogTitle>Create New Land Title</DialogTitle>
+          <DialogTitle className="text-slate-100">Create New Land Title</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
+            <Label className="text-slate-400">Owner</Label>
             <Input
-              placeholder="Owner"
+              placeholder="Enter owner name"
               value={formData.owner}
               onChange={(e) => setFormData({ ...formData, owner: e.target.value })}
+              className="bg-slate-800 border-slate-700 text-slate-100"
             />
           </div>
           <div className="space-y-2">
+            <Label className="text-slate-400">Description</Label>
             <Textarea
-              placeholder="Description"
+              placeholder="Enter property description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="bg-slate-800 border-slate-700 text-slate-100"
             />
           </div>
           <div className="space-y-2">
+            <Label className="text-slate-400">Value</Label>
             <Input
               type="number"
-              placeholder="Value"
+              placeholder="Enter property value"
               value={formData.value}
               onChange={(e) => setFormData({ ...formData, value: e.target.value })}
+              className="bg-slate-800 border-slate-700 text-slate-100"
             />
           </div>
           <div className="space-y-2">
+            <Label className="text-slate-400">Document</Label>
             <Input
               type="file"
               onChange={(e) => {
@@ -93,9 +119,21 @@ export function CreateLandTitle() {
                   reader.readAsDataURL(file);
                 }
               }}
+              className="bg-slate-800 border-slate-700 text-slate-100"
             />
           </div>
-          <Button type="submit" className="w-full">Create</Button>
+          <Button 
+            type="submit" 
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            disabled={isCreating}
+          >
+            {isCreating ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Plus className="w-4 h-4 mr-2" />
+            )}
+            Create
+          </Button>
         </form>
       </DialogContent>
     </Dialog>
