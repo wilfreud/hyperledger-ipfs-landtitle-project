@@ -81,6 +81,12 @@ importers:
       '@types/swagger-ui-express':
         specifier: ^4.1.8
         version: 4.1.8
+      axios:
+        specifier: ^1.8.2
+        version: 1.8.2(debug@4.4.0)
+      form-data:
+        specifier: ^4.0.2
+        version: 4.0.2
       typescript:
         specifier: ^5.8.2
         version: 5.8.2
