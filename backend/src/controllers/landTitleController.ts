@@ -1,24 +1,39 @@
-import { z } from 'zod';
-import { uploadToIPFS } from '../ipfs/ipfsService.js';
-import { getContract } from '../chaincode/fabricGateway.js';
 import { Request, Response } from 'express';
+import { getContract } from '../chaincode/fabricGateway.js';
+import { uploadToIPFS } from '../ipfs/ipfsService.js';
+import { z } from 'zod';
 
-const LandTitleSchema = z.object({
+function parseFabricresponse(response: any) {
+    return JSON.parse(Buffer.from(response).toString("utf-8"));
+}
+
+// Validation Schemas
+const CreateLandTitleSchema = z.object({
     id: z.string().min(3),
-    owner: z.string().regex(/^org\dMSP$/), // Match MSP format
+    owner: z.string().min(3),
     description: z.string().min(10),
     value: z.number().positive(),
-    document: z.instanceof(Buffer),
+    document: z.string().transform(s => Buffer.from(s, 'base64')),
     timestamp: z.string().datetime()
+});
+
+const UpdateLandTitleSchema = z.object({
+    newOwner: z.string().min(3),
+    newValue: z.number().positive()
+});
+
+const TransferLandTitleSchema = z.object({
+    newOwner: z.string().min(3),
+    newOrg: z.string().regex(/^Org\dMSP$/)
 });
 
 export const createLandTitle = async (req: Request, res: Response) => {
     try {
-        const validated = LandTitleSchema.parse(req.body);
+        const validated = CreateLandTitleSchema.parse(req.body);
         const documentHash = await uploadToIPFS(validated.document);
 
-        const contrakt = await getContract();
-        const result = await contrakt.submitTransaction(
+        const contract = await getContract();
+        const result = await contract.submitTransaction(
             'CreateLandTitle',
             validated.id,
             validated.owner,
@@ -28,22 +43,92 @@ export const createLandTitle = async (req: Request, res: Response) => {
             validated.timestamp
         );
 
-        console.log('result', result);
-        console.log('result to string ', Buffer.from(result.toString()).toString('utf-8'))
+        res.status(201).json({
+            // txId: parseFabricresponse(result).getTransactionId(),
+            txId: parseFabricresponse(result),
+            cid: documentHash
+        });
+    } catch (error) {
+        handleFabricError(error, res);
+    }
+};
 
-        res.status(200).json({ cid: documentHash, txId: result });
-        // res.status(200).json({ cid: documentHash, txId: result.getTransactionId() });
+export const getLandTitle = async (req: Request, res: Response) => {
+    try {
+        const contract = await getContract();
+        const result = await contract.evaluateTransaction(
+            'ReadLandTitle',
+            req.params.id
+        );
+
+        res.status(200).json(parseFabricresponse(result));
+    } catch (error) {
+        handleFabricError(error, res);
+    }
+};
+
+export const updateLandTitle = async (req: Request, res: Response) => {
+    try {
+        const validated = UpdateLandTitleSchema.parse(req.body);
+        const contract = await getContract();
+
+        const result = await contract.submitTransaction(
+            'UpdateLandTitle',
+            req.params.id,
+            validated.newOwner,
+            validated.newValue.toString()
+        );
+
+        res.status(200).json({
+            txId: parseFabricresponse(result),
+            message: 'Land title updated'
+        });
+    } catch (error) {
+        handleFabricError(error, res);
+    }
+};
+
+export const transferLandTitle = async (req: Request, res: Response) => {
+    try {
+        const validated = TransferLandTitleSchema.parse(req.body);
+        const contract = await getContract();
+
+        const result = await contract.submitTransaction(
+            'TransferLandTitle',
+            req.params.id,
+            validated.newOwner,
+            validated.newOrg
+        );
+
+        console.log(result)
+        res.status(200).json({
+            txId: parseFabricresponse(result),
+            message: 'Land title transferred'
+        });
+    } catch (error) {
+        handleFabricError(error, res);
+    }
+};
+
+export const getAllLandTitles = async (req: Request, res: Response) => {
+    try {
+        const contract = await getContract();
+        const result = await contract.evaluateTransaction('GetAllLandTitles');
+        console.log(Buffer.from(result).toString("utf-8"))
+
+        res.status(200).json(parseFabricresponse(result));
     } catch (error) {
         handleFabricError(error, res);
     }
 };
 
 const handleFabricError = (error: any, res: Response) => {
-    if (error.endorsements) {
-        return res.status(400).json({
-            error: 'Chaincode rejection',
-            details: error.endorsements.map((e: any) => e.message)
-        });
+    console.error(error)
+    if (error.message.includes('does not exist')) {
+        return res.status(404).json({ error: error.message });
+    }
+    if (error.message.includes('access denied')) {
+        return res.status(403).json({ error: 'Unauthorized operation' });
     }
     res.status(500).json({ error: error.message });
 };
